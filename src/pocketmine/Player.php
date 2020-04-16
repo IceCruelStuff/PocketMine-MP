@@ -370,6 +370,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $lastRightClickTime = 0.0;
 	/** @var Vector3|null */
 	protected $lastRightClickPos = null;
+	/** @var int */
+	protected $protocolId = ProtocolInfo::CURRENT_PROTOCOL;
 
 	/**
 	 * @return TranslationContainer|string
@@ -406,6 +408,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getNameBans()->remove($this->getName());
 		}
 	}
+
+	public function getProtocolId(): int{
+	    return $this->protocolId;
+    }
 
 	public function isWhitelisted() : bool{
 		return $this->server->isWhitelisted($this->username);
@@ -1818,18 +1824,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		if($packet->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
-			if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL){
-				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
-			}else{
-				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_SERVER, true);
-			}
+        if(!in_array($packet->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS, true)) {
+            if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL){
+                $this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
+            }else{
+                $this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_SERVER, true);
+            }
 
-			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
-			$this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.incompatibleProtocol", [$packet->protocol ?? "unknown"]), false);
+            //This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
+            $this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.incompatibleProtocol", [$packet->protocol ?? "unknown"]), false);
 
-			return true;
-		}
+            return true;
+        }
 
 		if(!self::isValidUserName($packet->username)){
 			$this->close("", "disconnectionScreen.invalidName");
@@ -1837,6 +1843,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
+		$this->protocolId = $packet->protocol;
 		$this->username = TextFormat::clean($packet->username);
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);

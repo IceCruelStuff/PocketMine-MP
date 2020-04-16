@@ -45,7 +45,7 @@ class PlayerListPacket extends DataPacket{
 		return parent::clean();
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocolId){
 		$this->type = $this->getByte();
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
@@ -58,7 +58,7 @@ class PlayerListPacket extends DataPacket{
 				$entry->xboxUserId = $this->getString();
 				$entry->platformChatId = $this->getString();
 				$entry->buildPlatform = $this->getLInt();
-				$entry->skinData = $this->getSkin();
+				$entry->skinData = $this->getSkin($protocolId);
 				$entry->isTeacher = $this->getBool();
 				$entry->isHost = $this->getBool();
 			}else{
@@ -69,7 +69,7 @@ class PlayerListPacket extends DataPacket{
 		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $protocolId){
 		$this->putByte($this->type);
 		$this->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
@@ -80,7 +80,7 @@ class PlayerListPacket extends DataPacket{
 				$this->putString($entry->xboxUserId);
 				$this->putString($entry->platformChatId);
 				$this->putLInt($entry->buildPlatform);
-				$this->putSkin($entry->skinData);
+				$this->putSkin($entry->skinData, $protocolId);
 				$this->putBool($entry->isTeacher);
 				$this->putBool($entry->isHost);
 			}else{
@@ -88,6 +88,10 @@ class PlayerListPacket extends DataPacket{
 			}
 		}
 	}
+
+    public function getProtocolVersions(): array{
+        return [ProtocolInfo::CURRENT_PROTOCOL, ProtocolInfo::PROTOCOL_1_14_0];
+    }
 
 	public function handle(NetworkSession $session) : bool{
 		return $session->handlePlayerList($this);

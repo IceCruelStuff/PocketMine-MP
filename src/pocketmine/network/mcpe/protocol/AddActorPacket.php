@@ -171,7 +171,7 @@ class AddActorPacket extends DataPacket{
 	/** @var EntityLink[] */
 	public $links = [];
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocolId){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->type = array_search($t = $this->getString(), self::LEGACY_ID_MAP_BC, true);
@@ -209,7 +209,7 @@ class AddActorPacket extends DataPacket{
 		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $protocolId){
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		if(!isset(self::LEGACY_ID_MAP_BC[$this->type])){

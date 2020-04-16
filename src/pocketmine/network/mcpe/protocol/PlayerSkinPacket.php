@@ -41,21 +41,25 @@ class PlayerSkinPacket extends DataPacket{
 	/** @var SkinData */
 	public $skin;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocolId){
 		$this->uuid = $this->getUUID();
-		$this->skin = $this->getSkin();
+		$this->skin = $this->getSkin($protocolId);
 		$this->newSkinName = $this->getString();
 		$this->oldSkinName = $this->getString();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $protocolId){
 		$this->putUUID($this->uuid);
-		$this->putSkin($this->skin);
+		$this->putSkin($this->skin, $protocolId);
 		$this->putString($this->newSkinName);
 		$this->putString($this->oldSkinName);
 	}
 
-	public function handle(NetworkSession $session) : bool{
+    public function getProtocolVersions(): array{
+        return [ProtocolInfo::CURRENT_PROTOCOL, ProtocolInfo::PROTOCOL_1_14_0];
+    }
+
+    public function handle(NetworkSession $session) : bool{
 		return $session->handlePlayerSkin($this);
 	}
 }

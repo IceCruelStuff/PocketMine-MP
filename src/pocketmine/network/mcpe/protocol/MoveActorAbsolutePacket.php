@@ -47,7 +47,7 @@ class MoveActorAbsolutePacket extends DataPacket{
 	/** @var float */
 	public $zRot;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocolId){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->flags = $this->getByte();
 		$this->position = $this->getVector3();
@@ -56,7 +56,7 @@ class MoveActorAbsolutePacket extends DataPacket{
 		$this->zRot = $this->getByteRotation();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $protocolId){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putByte($this->flags);
 		$this->putVector3($this->position);

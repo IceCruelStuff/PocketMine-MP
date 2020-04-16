@@ -1700,8 +1700,29 @@ class Server{
 	 * @return void
 	 */
 	public function broadcastPacket(array $players, DataPacket $packet){
-		$packet->encode();
-		$this->batchPackets($players, [$packet], false);
+	    $protocolIds = [];
+
+	    if($packet->isProtocolDependent()){
+            foreach($players as $player){
+                $encodingProtocol = $packet->getEncodingProtocol($player->getProtocolId());
+
+                if(isset($protocolIds[$encodingProtocol])) {
+                    $protocolIds[$encodingProtocol][] = $player;
+                } else {
+                    $protocolIds[$encodingProtocol] = [$player];
+                }
+            }
+
+            foreach($protocolIds as $protocolId => $protocolPlayers) {
+                $pk = clone $packet;
+
+                $pk->encode($protocolId);
+                $this->batchPackets($protocolPlayers, [$pk], false);
+            }
+        }else{
+            $packet->encode();
+            $this->batchPackets($players, [$packet], false);
+        }
 	}
 
 	/**
@@ -1723,9 +1744,18 @@ class Server{
 		if(count($targets) > 0){
 			$pk = new BatchPacket();
 
-			foreach($packets as $p){
-				$pk->addPacket($p);
+			foreach($packets as $index => $p){
+			    if(!$p->isEncoded && $p->isProtocolDependent()){
+			        $this->broadcastPacket($players, $p);
+			        unset($packets[$index]);
+                } else {
+                    $pk->addPacket($p);
+                }
 			}
+
+			if(count($packets) === 0){
+			    return;
+            }
 
 			if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
 				$pk->setCompressionLevel($this->networkCompressionLevel);
@@ -1751,13 +1781,13 @@ class Server{
 	 * @return void
 	 */
 	public function broadcastPacketsCallback(BatchPacket $pk, array $players, bool $immediate = false){
-		if(!$pk->isEncoded){
-			$pk->encode();
-		}
+        if(!$pk->isEncoded){
+            $pk->encode();
+        }
 
-		foreach($players as $i){
-			$i->sendDataPacket($pk, false, $immediate);
-		}
+        foreach($players as $i){
+            $i->sendDataPacket($pk, false, $immediate);
+        }
 	}
 
 	/**

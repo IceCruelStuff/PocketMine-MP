@@ -35,6 +35,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
@@ -77,7 +78,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLInt($uuid->getPart(2));
 	}
 
-	public function getSkin() : SkinData{
+	public function getSkin(int $protocolId) : SkinData{
 		$skinId = $this->getString();
 		$skinResourcePatch = $this->getString();
 		$skinData = $this->getSkinImage();
@@ -98,14 +99,22 @@ class NetworkBinaryStream extends BinaryStream{
 		$capeOnClassic = $this->getBool();
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
+        if ($protocolId >= ProtocolInfo::PROTOCOL_1_14_60) {
+            $armSize = $this->getString();
+            $skinColor = $this->getString();
+            $personaPieces = $this->getLInt();
+            $pieceTintColor = $this->getLInt();
+        }
 
 		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId);
 	}
 
-	/**
-	 * @return void
-	 */
-	public function putSkin(SkinData $skin){
+    /**
+     * @param SkinData $skin
+     * @param int $protocolId
+     * @return void
+     */
+	public function putSkin(SkinData $skin, int $protocolId){
 		$this->putString($skin->getSkinId());
 		$this->putString($skin->getResourcePatch());
 		$this->putSkinImage($skin->getSkinImage());
@@ -123,7 +132,13 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putBool($skin->isPersonaCapeOnClassic());
 		$this->putString($skin->getCapeId());
 		$this->putString($skin->getFullSkinId());
-	}
+        if ($protocolId >= ProtocolInfo::PROTOCOL_1_14_60) {
+            $this->putString(''); //ArmSize
+            $this->putString(''); //SkinColor
+            $this->putLInt(0);   //Persona Pieces -> more info to come
+            $this->putLInt(0);	//PieceTintColors -> more info to come
+        }
+    }
 
 	private function getSkinImage() : SkinImage{
 		$width = $this->getLInt();
