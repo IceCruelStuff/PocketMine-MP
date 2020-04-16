@@ -99,11 +99,29 @@ class NetworkBinaryStream extends BinaryStream{
 		$capeOnClassic = $this->getBool();
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
-        if ($protocolId >= ProtocolInfo::PROTOCOL_1_14_60) {
+        if ($protocolId === ProtocolInfo::PROTOCOL_1_14_60) {
             $armSize = $this->getString();
             $skinColor = $this->getString();
-            $personaPieces = $this->getLInt();
-            $pieceTintColor = $this->getLInt();
+            $personaPieceCount = $this->getLInt();
+            $personaPieces = [];
+            for($i = 0; $i < $personaPieceCount; ++$i){
+                    $pieceId = $this->getString();
+                    $pieceType = $this->getString();
+                    $packId = $this->getString();
+                    $isDefaultPiece = $this->getBool();
+                    $productId = $this->getString();
+            }
+            $pieceTintColorCount = $this->getLInt();
+            $pieceTintColors = [];
+            for($i = 0; $i < $pieceTintColorCount; ++$i){
+                $pieceType = $this->getString();
+                $colorCount = $this->getLInt();
+                $colors = [];
+                for($j = 0; $j < $colorCount; ++$j){
+                    $colors[] = $this->getString();
+                }
+            }
+            $isTrustedSkin = $this->getBool();
         }
 
 		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId);
@@ -132,7 +150,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putBool($skin->isPersonaCapeOnClassic());
 		$this->putString($skin->getCapeId());
 		$this->putString($skin->getFullSkinId());
-        if ($protocolId >= ProtocolInfo::PROTOCOL_1_14_60) {
+        if ($protocolId === ProtocolInfo::PROTOCOL_1_14_60) {
             $this->putString(''); //ArmSize
             $this->putString(''); //SkinColor
             $this->putLInt(0);   //Persona Pieces -> more info to come
