@@ -121,7 +121,6 @@ class NetworkBinaryStream extends BinaryStream{
                     $colors[] = $this->getString();
                 }
             }
-            $isTrustedSkin = $this->getBool();
         }
 
 		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId);

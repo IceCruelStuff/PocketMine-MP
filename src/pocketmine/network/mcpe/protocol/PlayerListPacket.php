@@ -50,9 +50,8 @@ class PlayerListPacket extends DataPacket{
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$entry = new PlayerListEntry();
-
+            $entry->uuid = $this->getUUID();
 			if($this->type === self::TYPE_ADD){
-				$entry->uuid = $this->getUUID();
 				$entry->entityUniqueId = $this->getEntityUniqueId();
 				$entry->username = $this->getString();
 				$entry->xboxUserId = $this->getString();
@@ -61,12 +60,18 @@ class PlayerListPacket extends DataPacket{
 				$entry->skinData = $this->getSkin($protocolId);
 				$entry->isTeacher = $this->getBool();
 				$entry->isHost = $this->getBool();
-			}else{
-				$entry->uuid = $this->getUUID();
 			}
 
 			$this->entries[$i] = $entry;
 		}
+
+        if($protocolId === ProtocolInfo::PROTOCOL_1_14_60) {
+            for($i = 0; $i < $count; ++$i){
+                if(!$this->feof()){
+                    $this->getBool(); // isTrusted
+                }
+            }
+        }
 	}
 
 	protected function encodePayload(int $protocolId){
@@ -87,6 +92,12 @@ class PlayerListPacket extends DataPacket{
 				$this->putUUID($entry->uuid);
 			}
 		}
+
+        if($protocolId === ProtocolInfo::PROTOCOL_1_14_60  && $this->type === self::TYPE_ADD){
+            foreach ($this->entries as $entry){
+                $this->putBool(true);
+            }
+        }
 	}
 
     public function getProtocolVersions(): array{
