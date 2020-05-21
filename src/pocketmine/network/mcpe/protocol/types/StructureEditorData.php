@@ -21,31 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
+class StructureEditorData{
+	public const TYPE_DATA = 0;
+	public const TYPE_SAVE = 1;
+	public const TYPE_LOAD = 2;
+	public const TYPE_CORNER = 3;
+	public const TYPE_INVALID = 4;
+	public const TYPE_EXPORT = 5;
 
-use pocketmine\network\mcpe\NetworkSession;
-
-class SimpleEventPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::SIMPLE_EVENT_PACKET;
-
-	public const TYPE_ENABLE_COMMANDS = 1;
-	public const TYPE_DISABLE_COMMANDS = 2;
-	public const TYPE_UNLOCK_WORLD_TEMPLATE_SETTINGS = 3;
-
+	/** @var string */
+	public $structureName;
+	/** @var string */
+	public $structureDataField;
+	/** @var bool */
+	public $includePlayers;
+	/** @var bool */
+	public $showBoundingBox;
 	/** @var int */
-	public $eventType;
-
-	protected function decodePayload(int $protocolId){
-		$this->eventType = $this->getLShort();
-	}
-
-	protected function encodePayload(int $protocolId){
-		$this->putLShort($this->eventType);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSimpleEvent($this);
-	}
+	public $structureBlockType;
+	/** @var StructureSettings */
+	public $structureSettings;
+	/** @var int */
+	public $structureRedstoneSaveMove;
 }

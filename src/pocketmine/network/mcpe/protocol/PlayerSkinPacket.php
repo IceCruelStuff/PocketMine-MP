@@ -47,8 +47,10 @@ class PlayerSkinPacket extends DataPacket{
 		$this->newSkinName = $this->getString();
 		$this->oldSkinName = $this->getString();
 		if($protocolId === ProtocolInfo::PROTOCOL_1_14_60){
-            $this->getBool();
-        }
+            $this->skin->setVerified($this->getBool());
+        } else {
+			$this->skin->setVerified(true);
+		}
 	}
 
 	protected function encodePayload(int $protocolId){
@@ -57,7 +59,7 @@ class PlayerSkinPacket extends DataPacket{
 		$this->putString($this->newSkinName);
 		$this->putString($this->oldSkinName);
         if($protocolId === ProtocolInfo::PROTOCOL_1_14_60){
-            $this->putBool(true); //isTrusted
+	        $this->putBool($this->skin->isVerified());
         }
 	}
 

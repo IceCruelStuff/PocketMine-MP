@@ -1862,11 +1862,11 @@ class Level implements ChunkManager, Metadatable{
 
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player)){
+				if((!$player->isSneaking() or $item->isNull()) and $blockClicked->onActivate($item, $player)){
 					return true;
 				}
 
-				if(!$player->isSneaking() and $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
+				if($item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
 					return true;
 				}
 			}else{
@@ -1909,7 +1909,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
-			if($this->checkSpawnProtection($player, $blockClicked)){
+			if($this->checkSpawnProtection($player, $blockReplace)){
 				$ev->setCancelled();
 			}
 

@@ -146,6 +146,9 @@ use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\types\GameMode;
+use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
+use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
@@ -259,6 +262,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var bool */
 	public $loggedIn = false;
 
+	/** @var bool */
+	private $seenLoginPacket = false;
 	/** @var bool */
 	private $resourcePacksDone = false;
 
@@ -1335,12 +1340,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * TODO: remove this when Spectator Mode gets added properly to MCPE
 	 */
 	public static function getClientFriendlyGamemode(int $gamemode) : int{
-		$gamemode &= 0x03;
-		if($gamemode === Player::SPECTATOR){
-			return Player::CREATIVE;
-		}
-
-		return $gamemode;
+		static $map = [
+			self::SURVIVAL => GameMode::SURVIVAL,
+			self::CREATIVE => GameMode::CREATIVE,
+			self::ADVENTURE => GameMode::ADVENTURE,
+			self::SPECTATOR => GameMode::CREATIVE
+		];
+		return $map[$gamemode & 0x3];
 	}
 
 	/**
@@ -1820,9 +1826,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		if($this->loggedIn){
+		if($this->seenLoginPacket){
 			return false;
 		}
+		$this->seenLoginPacket = true;
 
         if(!in_array($packet->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS, true)) {
             if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL){
@@ -1866,6 +1873,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], base64_decode($animation["Image"], true)), $animation["Type"], $animation["Frames"]);
 		}
 
+		$personaPieces = [];
+		foreach($packet->clientData["PersonaPieces"] as $piece){
+			$personaPieces[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
+		}
+
+		$pieceTintColors = [];
+		foreach($packet->clientData["PieceTintColors"] as $tintColor){
+			$pieceTintColors[] = new PersonaPieceTintColor($tintColor["PieceType"], $tintColor["Colors"]);
+		}
+
 		$skinData = new SkinData(
 			$packet->clientData["SkinId"],
 			base64_decode($packet->clientData["SkinResourcePatch"] ?? "", true),
@@ -1877,7 +1894,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$packet->clientData["PremiumSkin"] ?? false,
 			$packet->clientData["PersonaSkin"] ?? false,
 			$packet->clientData["CapeOnClassicSkin"] ?? false,
-			$packet->clientData["CapeId"] ?? ""
+			$packet->clientData["CapeId"] ?? "",
+			null,
+			$packet->clientData["ArmSize"] ?? SkinData::ARM_SIZE_WIDE,
+			$packet->clientData["SkinColor"] ?? "",
+			$personaPieces,
+			$pieceTintColors,
+			true
 		);
 
 		$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);

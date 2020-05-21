@@ -21,31 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
+final class GeneratorType{
 
-use pocketmine\network\mcpe\NetworkSession;
-
-class SimpleEventPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::SIMPLE_EVENT_PACKET;
-
-	public const TYPE_ENABLE_COMMANDS = 1;
-	public const TYPE_DISABLE_COMMANDS = 2;
-	public const TYPE_UNLOCK_WORLD_TEMPLATE_SETTINGS = 3;
-
-	/** @var int */
-	public $eventType;
-
-	protected function decodePayload(int $protocolId){
-		$this->eventType = $this->getLShort();
+	private function __construct(){
+		//NOOP
 	}
 
-	protected function encodePayload(int $protocolId){
-		$this->putLShort($this->eventType);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSimpleEvent($this);
-	}
+	public const FINITE_OVERWORLD = 0;
+	public const OVERWORLD = 1;
+	public const FLAT = 2;
+	public const NETHER = 3;
+	public const THE_END = 4;
 }

@@ -21,31 +21,35 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
+final class PersonaPieceTintColor{
 
-use pocketmine\network\mcpe\NetworkSession;
+	public const PIECE_TYPE_PERSONA_EYES = "persona_eyes";
+	public const PIECE_TYPE_PERSONA_HAIR = "persona_hair";
+	public const PIECE_TYPE_PERSONA_MOUTH = "persona_mouth";
 
-class SimpleEventPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::SIMPLE_EVENT_PACKET;
+	/** @var string */
+	private $pieceType;
+	/** @var string[] */
+	private $colors;
 
-	public const TYPE_ENABLE_COMMANDS = 1;
-	public const TYPE_DISABLE_COMMANDS = 2;
-	public const TYPE_UNLOCK_WORLD_TEMPLATE_SETTINGS = 3;
-
-	/** @var int */
-	public $eventType;
-
-	protected function decodePayload(int $protocolId){
-		$this->eventType = $this->getLShort();
+	/**
+	 * @param string[] $colors
+	 */
+	public function __construct(string $pieceType, array $colors){
+		$this->pieceType = $pieceType;
+		$this->colors = $colors;
 	}
 
-	protected function encodePayload(int $protocolId){
-		$this->putLShort($this->eventType);
+	public function getPieceType() : string{
+		return $this->pieceType;
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSimpleEvent($this);
+	/**
+	 * @return string[]
+	 */
+	public function getColors() : array{
+		return $this->colors;
 	}
 }
