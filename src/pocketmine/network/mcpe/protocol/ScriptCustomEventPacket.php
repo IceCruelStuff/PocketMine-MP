@@ -45,6 +45,10 @@ class ScriptCustomEventPacket extends DataPacket{
 		$this->putString($this->eventData);
 	}
 
+	public function canBeSentBeforeLogin() : bool{
+		return true;
+	}
+
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleScriptCustomEvent($this);
 	}

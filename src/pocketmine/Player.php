@@ -1874,13 +1874,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$personaPieces = [];
-		foreach($packet->clientData["PersonaPieces"] as $piece){
-			$personaPieces[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
+
+		if(isset($packet->clientData["PersonaPieces"])){
+			foreach($packet->clientData["PersonaPieces"] as $piece){
+				$personaPieces[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
+			}
 		}
 
 		$pieceTintColors = [];
-		foreach($packet->clientData["PieceTintColors"] as $tintColor){
-			$pieceTintColors[] = new PersonaPieceTintColor($tintColor["PieceType"], $tintColor["Colors"]);
+
+		if(isset($packet->clientData["PieceTintColors"])){
+			foreach($packet->clientData["PieceTintColors"] as $tintColor){
+				$pieceTintColors[] = new PersonaPieceTintColor($tintColor["PieceType"], $tintColor["Colors"]);
+			}
 		}
 
 		$skinData = new SkinData(
@@ -1896,7 +1902,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$packet->clientData["CapeOnClassicSkin"] ?? false,
 			$packet->clientData["CapeId"] ?? "",
 			null,
-			$packet->clientData["ArmSize"] ?? SkinData::ARM_SIZE_WIDE,
+			$packet->clientData["ArmSize"] ?? "",
 			$packet->clientData["SkinColor"] ?? "",
 			$personaPieces,
 			$pieceTintColors,
