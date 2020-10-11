@@ -14,4 +14,4 @@ A feature-rich server software for Minecraft: BE. This is a SPOON of [PocketMine
 Join our Discord group and contact us!
 
 
-###### However may be good if you read rules channel when you joined first time :)
+**<sub><sup>However may be good if you read rules channel when you joined first time :)</sup></sub>**
