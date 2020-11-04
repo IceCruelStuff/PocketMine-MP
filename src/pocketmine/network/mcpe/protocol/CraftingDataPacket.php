@@ -70,7 +70,7 @@ class CraftingDataPacket extends DataPacket{
 		return parent::clean();
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->decodedEntries = [];
 		$recipeCount = $this->getUnsignedVarInt();
 		for($i = 0; $i < $recipeCount; ++$i){
@@ -254,7 +254,7 @@ class CraftingDataPacket extends DataPacket{
 		$this->entries[] = $recipe;
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putUnsignedVarInt(count($this->entries));
 
 		$writer = new NetworkBinaryStream();
