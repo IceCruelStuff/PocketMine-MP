@@ -1707,7 +1707,7 @@ class Server{
 		$protocolIds = [];
 		if ($packet->isProtocolDependent()) {
 			foreach ($players as $player) {
-				$encodingProtocol = $packet->getEncodingProtocol($player->getProtocolId());
+				$encodingProtocol = $packet->getEncodingProtocol($player->getPlayerProtocol());
 				if (isset($protocolIds[$encodingProtocol])) {
 					$protocolIds[$encodingProtocol][] = $player;
 				} else {
