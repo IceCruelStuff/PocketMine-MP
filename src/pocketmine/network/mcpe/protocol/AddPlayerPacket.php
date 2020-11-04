@@ -87,7 +87,7 @@ class AddPlayerPacket extends DataPacket{
 	/** @var int */
 	public $buildPlatform = DeviceOS::UNKNOWN;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->uuid = $this->getUUID();
 		$this->username = $this->getString();
 		$this->entityUniqueId = $this->getEntityUniqueId();
@@ -118,7 +118,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->buildPlatform = $this->getLInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putUUID($this->uuid);
 		$this->putString($this->username);
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
