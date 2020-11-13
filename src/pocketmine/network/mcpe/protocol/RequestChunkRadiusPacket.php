@@ -33,11 +33,11 @@ class RequestChunkRadiusPacket extends DataPacket{
 	/** @var int */
 	public $radius;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->radius = $this->getVarInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putVarInt($this->radius);
 	}
 
