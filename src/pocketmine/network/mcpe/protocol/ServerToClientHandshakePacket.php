@@ -40,11 +40,11 @@ class ServerToClientHandshakePacket extends DataPacket{
 		return true;
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->jwt = $this->getString();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putString($this->jwt);
 	}
 
