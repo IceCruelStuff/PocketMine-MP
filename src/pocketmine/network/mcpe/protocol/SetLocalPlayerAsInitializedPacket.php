@@ -33,11 +33,11 @@ class SetLocalPlayerAsInitializedPacket extends DataPacket{
 	/** @var int */
 	public $entityRuntimeId;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 	}
 
