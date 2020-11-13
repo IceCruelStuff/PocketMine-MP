@@ -41,20 +41,26 @@ class PlayerSkinPacket extends DataPacket{
 	/** @var SkinData */
 	public $skin;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->uuid = $this->getUUID();
-		$this->skin = $this->getSkin();
+		$this->skin = $this->getSkin($playerProtocol);
 		$this->newSkinName = $this->getString();
 		$this->oldSkinName = $this->getString();
-		$this->skin->setVerified($this->getBool());
+		if ($playerProtocol >= ProtocolInfo::PROTOCOL_390) {
+			$this->skin->setVerified($this->getBool());
+		} else {
+			$this->skin->setVerified(true);
+		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putUUID($this->uuid);
-		$this->putSkin($this->skin);
+		$this->putSkin($this->skin, $playerProtocol);
 		$this->putString($this->newSkinName);
 		$this->putString($this->oldSkinName);
-		$this->putBool($this->skin->isVerified());
+		if ($playerProtocol >= Info::PROTOCOL_390) {
+			$this->putBool($this->skin->isVerified());
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
