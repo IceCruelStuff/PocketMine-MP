@@ -41,11 +41,11 @@ class UpdateBlockPropertiesPacket extends DataPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
+	protected function decodePayload(int $playerProtocol) : void{
 		$this->nbt = $this->getRemaining();
 	}
 
-	protected function encodePayload() : void{
+	protected function encodePayload(int $playerProtocol) : void{
 		$this->put($this->nbt);
 	}
 
