@@ -136,7 +136,7 @@ class NetworkBinaryStream extends BinaryStream{
 			$pieceTintColors = [];
 		}
 
-		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors);
+		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize ?? 0, $skinColor, $personaPieces, $pieceTintColors);
 	}
 
 	/**
