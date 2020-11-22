@@ -44,13 +44,13 @@ class SetSpawnPositionPacket extends DataPacket{
 	/** @var bool */
 	public $spawnForced;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->spawnType = $this->getVarInt();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->spawnForced = $this->getBool();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putVarInt($this->spawnType);
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putBool($this->spawnForced);
