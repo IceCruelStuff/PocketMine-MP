@@ -387,7 +387,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var Vector3|null */
 	protected $lastRightClickPos = null;
 	/** @var int */
-	public $protocol = ProtocolInfo::PROTOCOL_389;
+	public $protocol = ProtocolInfo::PROTOCOL_388;
 
 	/**
 	 * @return TranslationContainer|string
