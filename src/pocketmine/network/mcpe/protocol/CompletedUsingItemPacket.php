@@ -52,12 +52,12 @@ class CompletedUsingItemPacket extends DataPacket{
 	/** @var int */
 	public $action;
 
-	public function decodePayload() : void{
+	public function decodePayload(int $playerProtocol) : void{
 		$this->itemId = $this->getShort();
 		$this->action = $this->getLInt();
 	}
 
-	public function encodePayload() : void{
+	public function encodePayload(int $playerProtocol) : void{
 		$this->putShort($this->itemId);
 		$this->putLInt($this->action);
 	}

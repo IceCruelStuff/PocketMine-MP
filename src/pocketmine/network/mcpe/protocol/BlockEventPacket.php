@@ -41,13 +41,13 @@ class BlockEventPacket extends DataPacket{
 	/** @var int */
 	public $eventData;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->eventType = $this->getVarInt();
 		$this->eventData = $this->getVarInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putVarInt($this->eventType);
 		$this->putVarInt($this->eventData);

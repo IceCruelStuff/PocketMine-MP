@@ -37,11 +37,11 @@ class BiomeDefinitionListPacket extends DataPacket{
 	/** @var string */
 	public $namedtag;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->namedtag = $this->getRemaining();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->put(
 			$this->namedtag ??
 			self::$DEFAULT_NBT_CACHE ??

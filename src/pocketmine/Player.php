@@ -386,6 +386,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $lastRightClickTime = 0.0;
 	/** @var Vector3|null */
 	protected $lastRightClickPos = null;
+	/** @var int */
+	public $protocol = ProtocolInfo::PROTOCOL_388;
 
 	/**
 	 * @return TranslationContainer|string
@@ -1867,7 +1869,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 		$this->seenLoginPacket = true;
 
-		if($packet->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
+		if (!in_array($packet->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS, true)) {
 			if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL){
 				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
 			}else{
@@ -1886,6 +1888,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
+		$this->protocol = $packet->protocol;
 		$this->username = TextFormat::clean($packet->username);
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
@@ -1916,19 +1919,23 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$personaPieces = [];
-		foreach($packet->clientData["PersonaPieces"] as $piece){
-			$personaPieces[] = new PersonaSkinPiece(
-				$piece["PieceId"],
-				$piece["PieceType"],
-				$piece["PackId"],
-				$piece["IsDefault"],
-				$piece["ProductId"]
-			);
+		if (isset($packet->clientData["PersonaPieces"])) {
+			foreach($packet->clientData["PersonaPieces"] as $piece){
+				$personaPieces[] = new PersonaSkinPiece(
+					$piece["PieceId"],
+					$piece["PieceType"],
+					$piece["PackId"],
+					$piece["IsDefault"],
+					$piece["ProductId"]
+				);
+			}
 		}
 
 		$pieceTintColors = [];
-		foreach($packet->clientData["PieceTintColors"] as $tintColor){
-			$pieceTintColors[] = new PersonaPieceTintColor($tintColor["PieceType"], $tintColor["Colors"]);
+		if (isset($packet->clientData["PieceTintColors"])) {
+			foreach($packet->clientData["PieceTintColors"] as $tintColor){
+				$pieceTintColors[] = new PersonaPieceTintColor($tintColor["PieceType"], $tintColor["Colors"]);
+			}
 		}
 
 		$skinData = new SkinData(
@@ -1952,7 +1959,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$packet->clientData["CapeOnClassicSkin"] ?? false,
 			$packet->clientData["CapeId"] ?? "",
 			null,
-			$packet->clientData["ArmSize"] ?? SkinData::ARM_SIZE_WIDE,
+			$packet->clientData["ArmSize"] ?? "",
 			$packet->clientData["SkinColor"] ?? "",
 			$personaPieces,
 			$pieceTintColors,
@@ -4094,6 +4101,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function onBlockChanged(Vector3 $block){
 
+	}
+
+	public function getPlayerProtocol() {
+		return $this->protocol;
 	}
 
 	public function getLoaderId() : int{

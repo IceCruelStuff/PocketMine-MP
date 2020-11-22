@@ -35,12 +35,12 @@ class ActorPickRequestPacket extends DataPacket{
 	/** @var int */
 	public $hotbarSlot;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->entityUniqueId = $this->getLLong();
 		$this->hotbarSlot = $this->getByte();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putLLong($this->entityUniqueId);
 		$this->putByte($this->hotbarSlot);
 	}

@@ -34,11 +34,11 @@ class SetActorLinkPacket extends DataPacket{
 	/** @var EntityLink */
 	public $link;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->link = $this->getEntityLink();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putEntityLink($this->link);
 	}
 

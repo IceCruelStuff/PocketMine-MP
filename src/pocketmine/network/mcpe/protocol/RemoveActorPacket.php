@@ -33,11 +33,11 @@ class RemoveActorPacket extends DataPacket{
 	/** @var int */
 	public $entityUniqueId;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putEntityUniqueId($this->entityUniqueId);
 	}
 

@@ -38,12 +38,12 @@ class SetActorDataPacket extends DataPacket{
 	 */
 	public $metadata;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->metadata = $this->getEntityMetadata();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putEntityMetadata($this->metadata);
 	}

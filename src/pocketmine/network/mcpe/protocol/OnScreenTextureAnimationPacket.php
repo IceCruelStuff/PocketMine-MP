@@ -33,11 +33,11 @@ class OnScreenTextureAnimationPacket extends DataPacket{
 	/** @var int */
 	public $effectId;
 
-	protected function decodePayload() : void{
+	protected function decodePayload(int $playerProtocol) : void{
 		$this->effectId = $this->getLInt(); //unsigned
 	}
 
-	protected function encodePayload() : void{
+	protected function encodePayload(int $playerProtocol) : void{
 		$this->putLInt($this->effectId);
 	}
 

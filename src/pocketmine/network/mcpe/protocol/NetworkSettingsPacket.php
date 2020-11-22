@@ -46,11 +46,11 @@ class NetworkSettingsPacket extends DataPacket/* implements ClientboundPacket*/{
 		return $this->compressionThreshold;
 	}
 
-	protected function decodePayload() : void{
+	protected function decodePayload(int $playerProtocol) : void{
 		$this->compressionThreshold = $this->getLShort();
 	}
 
-	protected function encodePayload() : void{
+	protected function encodePayload(int $playerProtocol) : void{
 		$this->putLShort($this->compressionThreshold);
 	}
 

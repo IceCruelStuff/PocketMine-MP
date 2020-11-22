@@ -165,7 +165,7 @@ class StartGamePacket extends DataPacket{
 	 */
 	public $itemTable = null;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->playerGamemode = $this->getVarInt();
@@ -235,7 +235,7 @@ class StartGamePacket extends DataPacket{
 		$this->multiplayerCorrelationId = $this->getString();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putEntityUniqueId($this->entityUniqueId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVarInt($this->playerGamemode);

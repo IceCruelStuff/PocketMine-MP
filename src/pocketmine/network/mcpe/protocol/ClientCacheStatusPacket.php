@@ -43,11 +43,11 @@ class ClientCacheStatusPacket extends DataPacket/* implements ServerboundPacket*
 		return $this->enabled;
 	}
 
-	protected function decodePayload() : void{
+	protected function decodePayload(int $playerProtocol) : void{
 		$this->enabled = $this->getBool();
 	}
 
-	protected function encodePayload() : void{
+	protected function encodePayload(int $playerProtocol) : void{
 		$this->putBool($this->enabled);
 	}
 

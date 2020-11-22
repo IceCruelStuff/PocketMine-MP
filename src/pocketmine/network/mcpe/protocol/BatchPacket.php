@@ -57,7 +57,7 @@ class BatchPacket extends DataPacket{
 		assert($pid === static::NETWORK_ID);
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$data = $this->getRemaining();
 		try{
 			$this->payload = zlib_decode($data, 1024 * 1024 * 2); //Max 2MB
@@ -70,7 +70,7 @@ class BatchPacket extends DataPacket{
 		$this->putByte(static::NETWORK_ID);
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->put(zlib_encode($this->payload, ZLIB_ENCODING_DEFLATE, $this->compressionLevel));
 	}
 

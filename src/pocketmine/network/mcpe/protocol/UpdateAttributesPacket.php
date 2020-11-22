@@ -36,12 +36,12 @@ class UpdateAttributesPacket extends DataPacket{
 	/** @var Attribute[] */
 	public $entries = [];
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->entries = $this->getAttributeList();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putAttributeList(...$this->entries);
 	}

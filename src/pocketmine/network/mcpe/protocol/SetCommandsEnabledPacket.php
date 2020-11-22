@@ -33,11 +33,11 @@ class SetCommandsEnabledPacket extends DataPacket{
 	/** @var bool */
 	public $enabled;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->enabled = $this->getBool();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putBool($this->enabled);
 	}
 
