@@ -41,7 +41,7 @@ class UpdateEquipPacket extends DataPacket{
 	/** @var string */
 	public $namedtag;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $playerProtocol){
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
 		$this->windowSlotCount = $this->getVarInt();
@@ -49,7 +49,7 @@ class UpdateEquipPacket extends DataPacket{
 		$this->namedtag = $this->getRemaining();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload(int $playerProtocol){
 		$this->putByte($this->windowId);
 		$this->putByte($this->windowType);
 		$this->putVarInt($this->windowSlotCount);
