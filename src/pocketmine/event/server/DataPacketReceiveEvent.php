@@ -26,6 +26,12 @@ namespace pocketmine\event\server;
 use pocketmine\event\Cancellable;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\Player;
+use function var_dump;
+use function fwrite;
+use function fopen;
+use function fclose;
+use function ob_start;
+use function ob_get_clean;
 
 class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
 	/** @var DataPacket */
@@ -36,19 +42,6 @@ class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
 	public function __construct(Player $player, DataPacket $packet){
 		$this->packet = $packet;
 		$this->player = $player;
-        // write to file whenever event is called
-        ob_start();
-        var_dump($packet);
-        $data = ob_get_clean();
-        $file = fopen("received_packets_var_dump.txt", 'a');
-        fwrite($file, $data);
-        fwrite($file, "\n");
-        fclose($file);
-        // save both print_r() and var_dump() files
-        $printFile = fopen("received_packets_print_r.txt", 'a');
-        fwrite($file, print_r($packet, true));
-        fwrite($file, "\n");
-        fclose($printFile);
 	}
 
 	public function getPacket() : DataPacket{
