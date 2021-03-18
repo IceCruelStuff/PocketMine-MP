@@ -44,7 +44,7 @@ use function php_uname;
 use function strlen;
 use const PHP_VERSION;
 
-class SendUsageTask extends AsyncTask{
+class SendUsageTask extends AsyncTask {
 
 	public const TYPE_OPEN = 1;
 	public const TYPE_STATUS = 2;
@@ -127,7 +127,9 @@ class SendUsageTask extends AsyncTask{
 					$playerList[$k] = md5($v);
 				}
 
-				$players = array_map(function(Player $p) : string{ return md5($p->getUniqueId()->toBinary()); }, $server->getOnlinePlayers());
+				$players = array_map(function(Player $p) : string{
+					return md5($p->getUniqueId()->toBinary());
+				}, $server->getOnlinePlayers());
 
 				$data["players"] = [
 					"count" => count($players),
@@ -153,7 +155,8 @@ class SendUsageTask extends AsyncTask{
 
 		$this->endpoint = $endpoint . "api/post";
 		$data = json_encode($data/*, JSON_PRETTY_PRINT*/);
-		if($data === false) throw new AssumptionFailedError("Statistics JSON should never fail to encode: " . json_last_error_msg());
+		if ($data === false)
+			throw new AssumptionFailedError("Statistics JSON should never fail to encode: " . json_last_error_msg());
 		$this->data = $data;
 	}
 
@@ -163,4 +166,5 @@ class SendUsageTask extends AsyncTask{
 			"Content-Length: " . strlen($this->data)
 		]);
 	}
+
 }
