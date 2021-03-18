@@ -201,6 +201,12 @@ use function strtolower;
 use function substr;
 use function trim;
 use function ucfirst;
+use function var_dump;
+use function fwrite;
+use function fopen;
+use function fclose;
+use function ob_start;
+use function ob_get_clean;
 use const M_PI;
 use const M_SQRT3;
 use const PHP_INT_MAX;
@@ -1863,7 +1869,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$personaPieces = [];
 		foreach($packet->clientData["PersonaPieces"] as $piece){
-			$personaPieces[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
+			$personaPiece[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
 		}
 
 		$pieceTintColors = [];
@@ -3115,6 +3121,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function handleDataPacket(DataPacket $packet){
 		if($this->sessionAdapter !== null){
+            // write to file whenever function is called
+            ob_start();
+            var_dump($packet);
+            $data = ob_get_clean();
+            $file = fopen("received_packets_var_dump.txt", 'a');
+            fwrite($file, $data);
+            fwrite($file, "\n");
+            fclose($file);
+            // save both print_r() and var_dump() files
+            $printFile = fopen("received_packets_print_r.txt", 'a');
+            fwrite($printFile, print_r($packet, true));
+            fwrite($printFile, "\n");
+            fclose($printFile);
+
 			$this->sessionAdapter->handleDataPacket($packet);
 		}
 	}
@@ -3126,6 +3146,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$this->isConnected()){
 			return false;
 		}
+
+        // write to file whenever function is called
+        ob_start();
+        var_dump($packet);
+        $data = ob_get_clean();
+        $file = fopen("batched_packets_var_dump.txt", 'a');
+        fwrite($file, $data);
+        fwrite($file, "\n");
+        fclose($file);
+        // save both print_r() and var_dump() files
+        $printFile = fopen("batched_packets_print_r.txt", 'a');
+        fwrite($printFile, print_r($packet, true));
+        fwrite($printFile, "\n");
+        fclose($printFile);
 
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
@@ -3153,6 +3187,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$this->loggedIn and !$packet->canBeSentBeforeLogin()){
 			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getName() . " too early");
 		}
+
+        // write to file whenever function is called
+        ob_start();
+        var_dump($packet);
+        $data = ob_get_clean();
+        $file = fopen("sent_packets_var_dump.txt", 'a');
+        fwrite($file, $data);
+        fwrite($file, "\n");
+        fclose($file);
+        // save both print_r() and var_dump() files
+        $printFile = fopen("sent_packets_print_r.txt", 'a');
+        fwrite($printFile, print_r($packet, true));
+        fwrite($printFile, "\n");
+        fclose($printFile);
 
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
